@@ -260,6 +260,7 @@ export default function BayarClient() {
                     alt="QRIS pembayaran Rayoza Online"
                     width={1135}
                     height={1600}
+                    sizes="(max-width: 640px) 80vw, 224px"
                     className="w-full h-auto rounded-lg"
                   />
                 </div>
