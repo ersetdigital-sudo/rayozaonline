@@ -1,6 +1,7 @@
 import SiteHeader from "@/components/SiteHeader";
 import Logo from "@/components/Logo";
 import ServiceCatalog from "@/components/home/ServiceCatalog";
+import ServiceShowcase from "@/components/home/ServiceShowcase";
 import LiveFeed from "@/components/home/LiveFeed";
 import FlashCountdown from "@/components/home/FlashCountdown";
 import OrderLookup from "@/components/home/OrderLookup";
@@ -13,13 +14,17 @@ const MARQUEE = [
   "BPJS Kesehatan",
   "PDAM",
   "IndiHome",
+  "Biznet",
   "DANA",
   "OVO",
   "GoPay",
   "ShopeePay",
+  "LinkAja",
   "Indosat",
   "Tri",
   "Smartfren",
+  "Adira Finance",
+  "FIF Astra",
   "Multifinance",
 ];
 
@@ -37,8 +42,9 @@ export default function HomePage() {
               Bayar tagihan tanpa antre, <span className="or">kelar dalam 3 detik.</span>
             </h1>
             <p className="muted mt-5 text-lg max-w-xl">
-              Token PLN, pulsa, paket data, BPJS sampai PDAM, semua beres dari HP. Harga
-              lebih hemat, refund otomatis kalau gagal, struk langsung masuk WhatsApp.
+              Token PLN, pulsa, paket data, BPJS, PDAM, top up e-wallet, tagihan TV &amp;
+              internet, sampai angsuran multifinance. Semua beres dari HP, refund otomatis
+              kalau gagal, struk langsung masuk WhatsApp.
             </p>
             <div className="flex flex-wrap gap-3 mt-8">
               <a href="#layanan" className="btn">
@@ -150,6 +156,8 @@ export default function HomePage() {
       </section>
 
       <ServiceCatalog />
+
+      <ServiceShowcase />
 
       <section id="cara" className="max-w-6xl mx-auto px-4 pt-20 scroll-mt-20">
         <h2 className="text-3xl md:text-4xl font-extrabold">Cara order</h2>

@@ -222,6 +222,93 @@
     padding: 4px 8px;
     color: #fff;
   }
+
+  .provider {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px;
+    text-align: left;
+    transition: transform .2s, border-color .2s, box-shadow .2s;
+    cursor: pointer;
+  }
+
+  .provider:hover {
+    border-color: rgba(43, 82, 136, .6);
+    transform: translateY(-1px);
+  }
+
+  .provider.on {
+    border-color: var(--or);
+    background: rgba(43, 82, 136, .06);
+    box-shadow: 0 0 0 1px var(--or) inset;
+  }
+
+  .provider-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 800;
+    font-size: 14px;
+    flex-shrink: 0;
+    box-shadow: 0 6px 14px -6px rgba(22, 35, 58, .45);
+  }
+
+  .provider-check {
+    margin-left: auto;
+    color: var(--or);
+    font-weight: 800;
+    font-size: 14px;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, .7);
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #33415a;
+  }
+
+  .wallet-tile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, .1);
+    border: 1px solid rgba(255, 255, 255, .18);
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    backdrop-filter: blur(6px);
+    transition: .2s;
+  }
+
+  .wallet-tile:hover {
+    background: rgba(255, 255, 255, .18);
+    border-color: rgba(255, 255, 255, .4);
+    transform: translateY(-1px);
+  }
+
+  .wallet-tile .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, .15);
+  }
 }
 
 @keyframes mq {

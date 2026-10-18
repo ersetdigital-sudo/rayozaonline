@@ -13,7 +13,6 @@ type CatalogItem = {
   href: string;
   search: string;
   icon: IconKey;
-  soon?: boolean;
 };
 
 const CATALOG: CatalogItem[] = [
@@ -65,36 +64,41 @@ const CATALOG: CatalogItem[] = [
   {
     id: "tv",
     name: "TV & Internet",
-    cat: "Tagihan",
-    desc: "IndiHome, First Media",
-    href: "#",
-    search: "tv & internetindihome, first media",
+    cat: "TV & Internet",
+    desc: "IndiHome, Biznet, First Media",
+    href: "/layanan?s=tv",
+    search: "tv & internetindihome, biznet, first media",
     icon: "tv",
-    soon: true,
   },
   {
     id: "ewallet",
     name: "E-Wallet",
     cat: "E-Wallet",
-    desc: "DANA, OVO, GoPay",
-    href: "#",
-    search: "e-walletdana, ovo, gopay",
+    desc: "DANA, OVO, GoPay, ShopeePay",
+    href: "/layanan?s=ewallet",
+    search: "e-walletdana, ovo, gopay, shopeepay, linkaja",
     icon: "ewallet",
-    soon: true,
   },
   {
     id: "finance",
     name: "Multifinance",
     cat: "Cicilan",
-    desc: "Cicilan kendaraan",
-    href: "#",
-    search: "multifinancecicilan kendaraan",
+    desc: "Adira, FIF, BAF",
+    href: "/layanan?s=finance",
+    search: "multifinancecicilan kendaraan, adira, fif, baf",
     icon: "finance",
-    soon: true,
   },
 ];
 
-const CHIPS = ["Semua", "Listrik", "Pulsa & Data", "Tagihan", "E-Wallet", "Cicilan"];
+const CHIPS = [
+  "Semua",
+  "Listrik",
+  "Pulsa & Data",
+  "Tagihan",
+  "TV & Internet",
+  "E-Wallet",
+  "Cicilan",
+];
 
 export default function ServiceCatalog() {
   const [cat, setCat] = useState("Semua");
@@ -136,41 +140,23 @@ export default function ServiceCatalog() {
       </div>
 
       <div id="grid" className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-        {items.map((service) => {
-          const body = (
-            <>
-              <span className="ico w-16 h-16 md:w-20 md:h-20 object-cover transition group-hover:scale-110">
-                <Icon name={service.icon} />
-              </span>
-              <h3 className="font-bold mt-4 text-sm md:text-base">{service.name}</h3>
-              <p className="muted text-xs mt-1">{service.desc}</p>
-            </>
-          );
-
-          return service.soon ? (
-            <a
-              key={service.id}
-              href="#"
-              data-c={service.cat}
-              className="svc card hov p-4 md:p-5 block group"
-              onClick={(event) => {
-                event.preventDefault();
-                alert("Segera hadir!");
-              }}
-            >
-              {body}
-            </a>
-          ) : (
-            <Link
-              key={service.id}
-              href={service.href}
-              data-c={service.cat}
-              className="svc card hov p-4 md:p-5 block group"
-            >
-              {body}
-            </Link>
-          );
-        })}
+        {items.map((service) => (
+          <Link
+            key={service.id}
+            href={service.href}
+            data-c={service.cat}
+            className="svc card hov p-4 md:p-5 block group relative overflow-hidden"
+          >
+            <span className="ico w-16 h-16 md:w-20 md:h-20 object-cover transition group-hover:scale-110">
+              <Icon name={service.icon} />
+            </span>
+            <h3 className="font-bold mt-4 text-sm md:text-base">{service.name}</h3>
+            <p className="muted text-xs mt-1">{service.desc}</p>
+            <span className="absolute right-4 top-4 text-[10px] font-bold uppercase tracking-wider or opacity-0 transition group-hover:opacity-100">
+              Buka →
+            </span>
+          </Link>
+        ))}
       </div>
 
       {items.length === 0 && (

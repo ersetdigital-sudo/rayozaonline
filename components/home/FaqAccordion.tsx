@@ -9,6 +9,18 @@ const FAQ = [
     "Metode pembayaran apa saja?",
     "QRIS, DANA, OVO, GoPay, ShopeePay, serta virtual account BCA, BRI, Mandiri, dan BNI.",
   ],
+  [
+    "E-wallet apa saja yang bisa di-top up?",
+    "DANA, OVO, GoPay, ShopeePay, dan LinkAja. Pilih penyedia, masukkan nomor terdaftar, lalu pilih nominal saldo.",
+  ],
+  [
+    "Bisa bayar tagihan TV & internet?",
+    "Bisa. Kami mendukung IndiHome, First Media, Biznet Home, MyRepublic, Transvision, dan K-Vision.",
+  ],
+  [
+    "Multifinance apa yang didukung?",
+    "Adira Finance, FIF Astra, BAF, Mega Auto Finance, Kredit Plus, dan Home Credit. Cukup masukkan nomor kontrak.",
+  ],
   ["Bagaimana jika transaksi gagal?", "Dana dikembalikan otomatis 100% ke metode pembayaran semula."],
   ["Apakah aman?", "Semua transaksi terenkripsi dan diproses langsung lewat mitra resmi."],
 ];

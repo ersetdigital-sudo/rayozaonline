@@ -5,7 +5,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Rayoza Online – Bayar Tagihan & Produk Digital",
   description:
-    "Bayar token PLN, pulsa, paket data, BPJS, dan PDAM tanpa antre. Harga hemat, refund otomatis, struk langsung ke WhatsApp.",
+    "Bayar token PLN, pulsa, paket data, BPJS, PDAM, tagihan TV & internet, top up e-wallet, dan angsuran multifinance tanpa antre. Harga hemat, refund otomatis, struk langsung ke WhatsApp.",
 };
 
 export default function RootLayout({

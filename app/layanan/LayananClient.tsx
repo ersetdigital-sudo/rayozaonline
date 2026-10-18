@@ -4,13 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Icon from "@/components/Icon";
-import {
-  OPERATORS,
-  PDAM_REGIONS,
-  SERVICES,
-  SERVICE_TABS,
-  type ServiceKey,
-} from "@/lib/data";
+import { OPERATORS, SERVICES, SERVICE_TABS, type ServiceKey } from "@/lib/data";
 import { rp } from "@/lib/utils";
 
 export default function LayananClient() {
@@ -25,9 +19,12 @@ function ServiceForm({ serviceKey }: { serviceKey: ServiceKey }) {
   const router = useRouter();
   const service = SERVICES[serviceKey];
 
+  const [groupKey, setGroupKey] = useState(service.groups?.[0]?.key ?? "");
   const [selected, setSelected] = useState<number | null>(null);
   const [num, setNum] = useState("");
-  const [region, setRegion] = useState("");
+  const [selectValue, setSelectValue] = useState("");
+
+  const group = service.groups?.find((item) => item.key === groupKey) ?? service.groups?.[0];
 
   useEffect(() => {
     document.title = service.title + " – Rayoza Online";
@@ -39,17 +36,24 @@ function ServiceForm({ serviceKey }: { serviceKey: ServiceKey }) {
       ? OPERATORS.find((item) => item.prefixes.includes(digits.slice(0, 4)))
       : undefined;
 
-  const option = selected === null ? null : service.options[selected];
+  const inputLabel = group?.inputLabel ?? service.inputLabel;
+  const placeholder = group?.placeholder ?? service.placeholder;
+  const hint = group?.hint ?? service.hint;
+  const min = group?.min ?? service.min;
+  const options = group?.options ?? service.options;
+
+  const option = selected === null ? null : (options[selected] ?? null);
   const productLabel = option
-    ? option.label + (operator ? ` (${operator.name})` : "")
+    ? `${group ? `${group.name} · ` : ""}${option.label}${operator ? ` (${operator.name})` : ""}`
     : "-";
 
   const total = rp((option?.price ?? 0) + (option ? service.adm : 0));
   const disabled = !(
     option &&
-    digits.length >= service.min &&
+    digits.length >= min &&
     (!service.isOperator || operator) &&
-    (!service.region || region)
+    (!service.select || selectValue) &&
+    (!service.groups || group)
   );
 
   const handlePay = () => {
@@ -59,13 +63,14 @@ function ServiceForm({ serviceKey }: { serviceKey: ServiceKey }) {
       localStorage.setItem(
         "nxOrder",
         JSON.stringify({
-          svc: service.title,
+          svc: group ? `${service.title} · ${group.name}` : service.title,
           k: serviceKey,
           num: digits,
           prod:
+            (group ? `${group.name} · ` : "") +
             option.label +
             (operator ? ` (${operator.name})` : "") +
-            (service.region ? ` · ${region}` : ""),
+            (service.select ? ` · ${selectValue}` : ""),
           price: option.price,
           adm: service.adm,
         }),
@@ -81,12 +86,15 @@ function ServiceForm({ serviceKey }: { serviceKey: ServiceKey }) {
     <main className="relative max-w-6xl mx-auto px-4 py-8 md:py-10">
       <div className="glow w-[420px] h-[420px] -top-32 -left-32"></div>
 
-      <div id="tabs" className="relative hidden md:flex flex-wrap gap-2 mb-8">
+      <div
+        id="tabs"
+        className="relative flex gap-2 mb-8 overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0 md:flex-wrap md:overflow-visible"
+      >
         {SERVICE_TABS.map((tab) => (
           <Link
             key={tab.key}
             href={`/layanan?s=${tab.key}`}
-            className={`chip flex items-center gap-2 ${tab.key === serviceKey ? "on" : ""}`}
+            className={`chip flex items-center gap-2 shrink-0 ${tab.key === serviceKey ? "on" : ""}`}
           >
             <span className="ico w-6 h-6 rounded-md">
               <Icon name={tab.key} />
@@ -119,16 +127,60 @@ function ServiceForm({ serviceKey }: { serviceKey: ServiceKey }) {
             </div>
           </div>
 
+          {service.groups && (
+            <div className="card p-5 md:p-6">
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <h2 className="font-bold">{service.groupsHeading ?? "Pilih penyedia"}</h2>
+                <span className="muted text-xs">
+                  {service.groups.length} penyedia tersedia
+                </span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {service.groups.map((item) => {
+                  const active = item.key === group?.key;
+
+                  return (
+                    <button
+                      key={item.key}
+                      type="button"
+                      className={`provider ${active ? "on" : ""}`}
+                      onClick={() => {
+                        setGroupKey(item.key);
+                        setSelected(null);
+                      }}
+                    >
+                      <span
+                        className="provider-mark"
+                        style={{ background: item.color }}
+                      >
+                        {item.name.slice(0, 1)}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-sm font-bold">{item.name}</span>
+                        <span className="muted text-xs block truncate">
+                          {item.tagline}
+                        </span>
+                      </span>
+                      <span className="provider-check" aria-hidden="true">
+                        {active ? "✓" : ""}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <div className="card p-5 md:p-6">
             <label htmlFor="num" className="font-semibold text-sm block mb-2">
-              {service.inputLabel}
+              {inputLabel}
             </label>
             <div className="relative">
               <input
                 id="num"
                 className="inp pr-28"
                 inputMode="numeric"
-                placeholder={service.placeholder}
+                placeholder={placeholder}
                 value={digits}
                 onChange={(event) => setNum(event.target.value.replace(/\D/g, ""))}
               />
@@ -146,21 +198,21 @@ function ServiceForm({ serviceKey }: { serviceKey: ServiceKey }) {
                 )}
               </div>
             </div>
-            <p className="muted text-xs mt-2">{service.hint}</p>
+            <p className="muted text-xs mt-2">{hint}</p>
 
-            {service.region && (
+            {service.select && (
               <div className="mt-4">
-                <label htmlFor="reg" className="font-semibold text-sm block mb-2">
-                  Wilayah PDAM
+                <label htmlFor="opt" className="font-semibold text-sm block mb-2">
+                  {service.select.label}
                 </label>
                 <select
-                  id="reg"
+                  id="opt"
                   className="inp"
-                  value={region}
-                  onChange={(event) => setRegion(event.target.value)}
+                  value={selectValue}
+                  onChange={(event) => setSelectValue(event.target.value)}
                 >
-                  <option value="">Pilih wilayah</option>
-                  {PDAM_REGIONS.map((item) => (
+                  <option value="">{service.select.placeholder}</option>
+                  {service.select.options.map((item) => (
                     <option key={item}>{item}</option>
                   ))}
                 </select>
@@ -168,22 +220,26 @@ function ServiceForm({ serviceKey }: { serviceKey: ServiceKey }) {
             )}
           </div>
 
-          <div className="card p-5 md:p-6">
-            <h2 className="font-bold mb-4">{service.optionHeading ?? "Pilih nominal"}</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {service.options.map((item, index) => (
-                <button
-                  key={item.label}
-                  type="button"
-                  className={`opt ${selected === index ? "on" : ""}`}
-                  onClick={() => setSelected(index)}
-                >
-                  <div className="font-semibold text-sm">{item.label}</div>
-                  <div className="or fh font-bold mt-1">{rp(item.price)}</div>
-                </button>
-              ))}
+          {options.length > 0 && (
+            <div className="card p-5 md:p-6">
+              <h2 className="font-bold mb-4">
+                {service.optionHeading ?? "Pilih nominal"}
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {options.map((item, index) => (
+                  <button
+                    key={item.label}
+                    type="button"
+                    className={`opt ${selected === index ? "on" : ""}`}
+                    onClick={() => setSelected(index)}
+                  >
+                    <div className="font-semibold text-sm">{item.label}</div>
+                    <div className="or fh font-bold mt-1">{rp(item.price)}</div>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <aside className="card p-5 md:p-6 lg:sticky lg:top-24">
@@ -193,6 +249,24 @@ function ServiceForm({ serviceKey }: { serviceKey: ServiceKey }) {
               <span className="muted">Layanan</span>
               <span className="text-right">{service.title}</span>
             </div>
+            {group && (
+              <div className="flex justify-between gap-3">
+                <span className="muted">Penyedia</span>
+                <span className="text-right flex items-center gap-1.5">
+                  <span
+                    className="w-2.5 h-2.5 rounded-full shrink-0"
+                    style={{ background: group.color }}
+                  ></span>
+                  {group.name}
+                </span>
+              </div>
+            )}
+            {service.select && (
+              <div className="flex justify-between gap-3">
+                <span className="muted">{service.select.label}</span>
+                <span className="text-right">{selectValue || "-"}</span>
+              </div>
+            )}
             <div className="flex justify-between gap-3">
               <span className="muted">Nomor</span>
               <span className="text-right break-all">{digits || "-"}</span>

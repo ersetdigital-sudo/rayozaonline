@@ -1,11 +1,37 @@
 import { rp } from "./utils";
 
-export type ServiceKey = "pln" | "pulsa" | "data" | "bpjs" | "pdam";
-export type IconKey = ServiceKey | "tv" | "ewallet" | "finance";
+export type ServiceKey =
+  | "pln"
+  | "pulsa"
+  | "data"
+  | "bpjs"
+  | "pdam"
+  | "tv"
+  | "ewallet"
+  | "finance";
+export type IconKey = ServiceKey;
 
 export type ProductOption = {
   label: string;
   price: number;
+};
+
+export type ServiceGroup = {
+  key: string;
+  name: string;
+  color: string;
+  tagline: string;
+  inputLabel: string;
+  placeholder: string;
+  hint: string;
+  min: number;
+  options: ProductOption[];
+};
+
+export type ServiceSelect = {
+  label: string;
+  placeholder: string;
+  options: string[];
 };
 
 export type ServiceDef = {
@@ -18,8 +44,10 @@ export type ServiceDef = {
   options: ProductOption[];
   min: number;
   isOperator?: boolean;
-  region?: boolean;
   optionHeading?: string;
+  select?: ServiceSelect;
+  groups?: ServiceGroup[];
+  groupsHeading?: string;
 };
 
 const nominal = (values: number[]): ProductOption[] =>
@@ -27,6 +55,91 @@ const nominal = (values: number[]): ProductOption[] =>
     label: rp(value),
     price: value + 1500,
   }));
+
+const walletNominal = (values: number[]): ProductOption[] =>
+  values.map((value) => ({
+    label: `${value / 1000}rb`,
+    price: value,
+  }));
+
+export const OPERATORS: { name: string; color: string; prefixes: string[] }[] = [
+  {
+    name: "Telkomsel",
+    color: "#E4002B",
+    prefixes: ["0811", "0812", "0813", "0821", "0822", "0823", "0851", "0852", "0853"],
+  },
+  {
+    name: "Indosat",
+    color: "#FFC800",
+    prefixes: ["0814", "0815", "0816", "0855", "0856", "0857", "0858"],
+  },
+  {
+    name: "XL",
+    color: "#0058A9",
+    prefixes: ["0817", "0818", "0819", "0859", "0877", "0878"],
+  },
+  {
+    name: "Axis",
+    color: "#7A2A90",
+    prefixes: ["0831", "0832", "0833", "0838"],
+  },
+  {
+    name: "Tri",
+    color: "#E5007E",
+    prefixes: ["0895", "0896", "0897", "0898", "0899"],
+  },
+  {
+    name: "Smartfren",
+    color: "#E4006C",
+    prefixes: ["0881", "0882", "0883", "0884", "0885", "0886", "0887", "0888", "0889"],
+  },
+];
+
+export const PDAM_REGIONS = [
+  "PDAM Kota Bandung",
+  "PAM Jaya (DKI Jakarta)",
+  "PDAM Surya Sembada Surabaya",
+  "PDAM Tirtanadi Medan",
+  "PDAM Kota Semarang",
+  "PDAM Tirta Pakuan Bogor",
+];
+
+export const TV_PROVIDERS = [
+  "IndiHome",
+  "First Media",
+  "Biznet Home",
+  "MyRepublic",
+  "Transvision",
+  "K-Vision",
+];
+
+export const FINANCE_PROVIDERS = [
+  "Adira Finance",
+  "FIF Astra",
+  "BAF",
+  "Mega Auto Finance",
+  "Kredit Plus",
+  "Home Credit",
+];
+
+export const WALLET_NOMINALS = [10000, 20000, 25000, 50000, 100000, 200000, 500000];
+
+const walletGroup = (
+  key: string,
+  name: string,
+  color: string,
+  tagline: string,
+): ServiceGroup => ({
+  key,
+  name,
+  color,
+  tagline,
+  inputLabel: `Nomor HP terdaftar ${name}`,
+  placeholder: "08xxxxxxxxxx",
+  hint: `Pastikan nomor aktif dan sudah terdaftar di aplikasi ${name}.`,
+  min: 10,
+  options: walletNominal(WALLET_NOMINALS),
+});
 
 export const SERVICES: Record<ServiceKey, ServiceDef> = {
   pln: {
@@ -92,7 +205,71 @@ export const SERVICES: Record<ServiceKey, ServiceDef> = {
     ],
     min: 6,
     optionHeading: "Pilih tagihan",
-    region: true,
+    select: {
+      label: "Wilayah PDAM",
+      placeholder: "Pilih wilayah",
+      options: PDAM_REGIONS,
+    },
+  },
+  tv: {
+    title: "TV & Internet",
+    desc: "Bayar tagihan IndiHome, First Media, Biznet, dan penyedia TV kabel lainnya.",
+    inputLabel: "Nomor Pelanggan",
+    placeholder: "Contoh: 122345678901",
+    hint: "Tertera di invoice atau aplikasi penyedia layanan.",
+    adm: 2500,
+    min: 8,
+    optionHeading: "Pilih tagihan",
+    select: {
+      label: "Penyedia layanan",
+      placeholder: "Pilih penyedia",
+      options: TV_PROVIDERS,
+    },
+    options: [
+      { label: "Internet 30 Mbps · 1 bulan", price: 285000 },
+      { label: "Internet 50 Mbps · 1 bulan", price: 385000 },
+      { label: "Internet + TV · 1 bulan", price: 445000 },
+      { label: "Tagihan tertunda 2 bulan", price: 770000 },
+    ],
+  },
+  ewallet: {
+    title: "E-Wallet",
+    desc: "Top up saldo DANA, OVO, GoPay, ShopeePay, dan LinkAja dalam hitungan detik.",
+    inputLabel: "Nomor HP",
+    placeholder: "08xxxxxxxxxx",
+    hint: "Pilih penyedia, lalu masukkan nomor yang terdaftar.",
+    adm: 0,
+    min: 10,
+    groupsHeading: "Pilih e-wallet",
+    optionHeading: "Pilih nominal top up",
+    options: [],
+    groups: [
+      walletGroup("dana", "DANA", "#118EEA", "Top up instan 24 jam"),
+      walletGroup("ovo", "OVO", "#4C3494", "Saldo langsung masuk"),
+      walletGroup("gopay", "GoPay", "#00AED6", "Tanpa biaya admin"),
+      walletGroup("shopeepay", "ShopeePay", "#EE4D2D", "Cocok untuk belanja"),
+      walletGroup("linkaja", "LinkAja", "#E82529", "Bayar semua tagihan"),
+    ],
+  },
+  finance: {
+    title: "Multifinance",
+    desc: "Bayar angsuran kendaraan dan pinjaman dari berbagai perusahaan pembiayaan.",
+    inputLabel: "Nomor Kontrak",
+    placeholder: "Contoh: 202612345678",
+    hint: "Tertera di kontrak atau tagihan angsuran bulanan.",
+    adm: 2500,
+    min: 6,
+    optionHeading: "Pilih tagihan angsuran",
+    select: {
+      label: "Perusahaan pembiayaan",
+      placeholder: "Pilih multifinance",
+      options: FINANCE_PROVIDERS,
+    },
+    options: [
+      { label: "Angsuran bulan ini", price: 1250000 },
+      { label: "Angsuran + denda keterlambatan", price: 1375000 },
+      { label: "Angsuran 2 bulan", price: 2500000 },
+    ],
   },
 };
 
@@ -102,48 +279,9 @@ export const SERVICE_TABS: { key: ServiceKey; label: string }[] = [
   { key: "data", label: "Paket Data" },
   { key: "bpjs", label: "BPJS" },
   { key: "pdam", label: "PDAM" },
-];
-
-export const OPERATORS: { name: string; color: string; prefixes: string[] }[] = [
-  {
-    name: "Telkomsel",
-    color: "#E4002B",
-    prefixes: ["0811", "0812", "0813", "0821", "0822", "0823", "0851", "0852", "0853"],
-  },
-  {
-    name: "Indosat",
-    color: "#FFC800",
-    prefixes: ["0814", "0815", "0816", "0855", "0856", "0857", "0858"],
-  },
-  {
-    name: "XL",
-    color: "#0058A9",
-    prefixes: ["0817", "0818", "0819", "0859", "0877", "0878"],
-  },
-  {
-    name: "Axis",
-    color: "#7A2A90",
-    prefixes: ["0831", "0832", "0833", "0838"],
-  },
-  {
-    name: "Tri",
-    color: "#E5007E",
-    prefixes: ["0895", "0896", "0897", "0898", "0899"],
-  },
-  {
-    name: "Smartfren",
-    color: "#E4006C",
-    prefixes: ["0881", "0882", "0883", "0884", "0885", "0886", "0887", "0888", "0889"],
-  },
-];
-
-export const PDAM_REGIONS = [
-  "PDAM Kota Bandung",
-  "PAM Jaya (DKI Jakarta)",
-  "PDAM Surya Sembada Surabaya",
-  "PDAM Tirtanadi Medan",
-  "PDAM Kota Semarang",
-  "PDAM Tirta Pakuan Bogor",
+  { key: "tv", label: "TV & Internet" },
+  { key: "ewallet", label: "E-Wallet" },
+  { key: "finance", label: "Multifinance" },
 ];
 
 export type PayMethod = {

@@ -20,6 +20,9 @@ const PRODUCTS: { label: string; icon: IconKey }[] = [
   { label: "BPJS 2 bln", icon: "bpjs" },
   { label: "PDAM", icon: "pdam" },
   { label: "DANA 100rb", icon: "ewallet" },
+  { label: "GoPay 50rb", icon: "ewallet" },
+  { label: "IndiHome 30Mbps", icon: "tv" },
+  { label: "Angsuran FIF", icon: "finance" },
 ];
 
 function randomItem(): FeedItem {

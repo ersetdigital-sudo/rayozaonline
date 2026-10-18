@@ -6,12 +6,30 @@ import { usePathname } from "next/navigation";
 import Logo from "./Logo";
 import Icon from "./Icon";
 
-const NAV_SERVICES = [
-  { key: "pln", short: "Token PLN", label: "Token & Tagihan PLN", desc: "Prabayar & pascabayar" },
-  { key: "pulsa", short: "Pulsa", label: "Pulsa", desc: "Semua operator" },
-  { key: "data", short: "Paket Data", label: "Paket Data", desc: "Kuota internet" },
-  { key: "bpjs", short: "BPJS", label: "BPJS Kesehatan", desc: "Iuran 1–6 bulan" },
-  { key: "pdam", short: "PDAM", label: "PDAM", desc: "Air seluruh wilayah" },
+const NAV_GROUPS = [
+  {
+    label: "Tagihan",
+    items: [
+      { key: "pln", short: "Token PLN", label: "Token & Tagihan PLN", desc: "Prabayar & pascabayar" },
+      { key: "pdam", short: "PDAM", label: "PDAM", desc: "Air seluruh wilayah" },
+      { key: "bpjs", short: "BPJS", label: "BPJS Kesehatan", desc: "Iuran 1–6 bulan" },
+      { key: "tv", short: "TV & Internet", label: "TV & Internet", desc: "IndiHome, Biznet, First Media" },
+    ],
+  },
+  {
+    label: "Top Up & Hiburan",
+    items: [
+      { key: "pulsa", short: "Pulsa", label: "Pulsa", desc: "Semua operator" },
+      { key: "data", short: "Paket Data", label: "Paket Data", desc: "Kuota internet" },
+      { key: "ewallet", short: "E-Wallet", label: "E-Wallet", desc: "DANA, OVO, GoPay, ShopeePay" },
+    ],
+  },
+  {
+    label: "Cicilan",
+    items: [
+      { key: "finance", short: "Multifinance", label: "Multifinance", desc: "Adira, FIF, BAF & lainnya" },
+    ],
+  },
 ] as const;
 
 const NAV_LINKS = [
@@ -95,26 +113,39 @@ export default function SiteHeader() {
 
             {servicesOpen && (
               <div className="absolute left-0 top-full pt-2">
-                <div className="w-[360px] rounded-2xl border border-[#d3ccc2] bg-[#F4F1EC] shadow-[0_24px_60px_-24px_rgba(22,35,58,0.5)] p-2">
-                  {NAV_SERVICES.map((service) => (
-                    <Link
-                      key={service.key}
-                      href={`/layanan?s=${service.key}`}
-                      onClick={() => setServicesOpen(false)}
-                      className="group flex items-start gap-3 rounded-xl p-2.5 transition hover:bg-white"
-                    >
-                      <span className="ico w-9 h-9 rounded-lg shrink-0 transition group-hover:scale-105">
-                        <Icon name={service.key} />
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block text-sm font-semibold text-[#16233a]">
-                          {service.label}
-                        </span>
-                        <span className="block text-xs muted mt-0.5">{service.desc}</span>
-                      </span>
-                    </Link>
-                  ))}
-                  <div className="border-t border-[#d3ccc2] mt-2 pt-2">
+                <div className="w-[600px] rounded-2xl border border-[#d3ccc2] bg-[#F4F1EC] shadow-[0_24px_60px_-24px_rgba(22,35,58,0.5)] p-3">
+                  <div className="grid grid-cols-3 gap-3">
+                    {NAV_GROUPS.map((group) => (
+                      <div key={group.label}>
+                        <div className="px-2 pb-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[#6b7586]">
+                          {group.label}
+                        </div>
+                        <div className="space-y-0.5">
+                          {group.items.map((service) => (
+                            <Link
+                              key={service.key}
+                              href={`/layanan?s=${service.key}`}
+                              onClick={() => setServicesOpen(false)}
+                              className="group flex items-start gap-2.5 rounded-xl p-2 transition hover:bg-white"
+                            >
+                              <span className="ico w-8 h-8 rounded-lg shrink-0 transition group-hover:scale-105">
+                                <Icon name={service.key} />
+                              </span>
+                              <span className="min-w-0">
+                                <span className="block text-[13px] font-semibold text-[#16233a]">
+                                  {service.label}
+                                </span>
+                                <span className="block text-[11px] muted mt-0.5 leading-snug">
+                                  {service.desc}
+                                </span>
+                              </span>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="border-t border-[#d3ccc2] mt-3 pt-2">
                     <Link
                       href="/#layanan"
                       onClick={() => setServicesOpen(false)}
@@ -165,24 +196,28 @@ export default function SiteHeader() {
         className={`${mobileOpen ? "" : "hidden"} lg:hidden border-t border-[#d3ccc2] bg-[#E5E0D9]/95 backdrop-blur-md`}
       >
         <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#6b7586] mb-2">
-            Layanan
-          </div>
-          <div className="grid grid-cols-2 gap-1">
-            {NAV_SERVICES.map((service) => (
-              <Link
-                key={service.key}
-                href={`/layanan?s=${service.key}`}
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-2.5 rounded-xl px-2 py-2 text-sm font-medium text-[#33415a] transition hover:bg-white/70 hover:text-[#2B5288]"
-              >
-                <span className="ico w-8 h-8 rounded-lg shrink-0">
-                  <Icon name={service.key} />
-                </span>
-                {service.short}
-              </Link>
-            ))}
-          </div>
+          {NAV_GROUPS.map((group) => (
+            <div key={group.label} className="mb-3 last:mb-0">
+              <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#6b7586] mb-2">
+                {group.label}
+              </div>
+              <div className="grid grid-cols-2 gap-1">
+                {group.items.map((service) => (
+                  <Link
+                    key={service.key}
+                    href={`/layanan?s=${service.key}`}
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-2.5 rounded-xl px-2 py-2 text-sm font-medium text-[#33415a] transition hover:bg-white/70 hover:text-[#2B5288]"
+                  >
+                    <span className="ico w-8 h-8 rounded-lg shrink-0">
+                      <Icon name={service.key} />
+                    </span>
+                    {service.short}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
 
           <div className="border-t border-[#d3ccc2] my-3" />
 
